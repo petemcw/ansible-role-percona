@@ -1,0 +1,61 @@
+---
+# Defines tasks to install and configure Percona client programs
+
+- name: Include the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags:
+    - mysql
+    - percona
+
+- name: Add APT key for Debian derivatives
+  apt_key: >
+    url=http://www.percona.com/downloads/RPM-GPG-KEY-percona
+    id=CD2EFD2A
+    state=present
+  when: ansible_os_family == 'Debian'
+  tags:
+    - mysql
+    - percona
+
+- name: Add APT repository for Debian derivatives
+  template: >
+    src=percona-list.j2
+    dest=/etc/apt/sources.list.d/percona.list
+    mode=0644 owner=root group=root
+  when: ansible_os_family == 'Debian'
+  tags:
+    - mysql
+    - percona
+
+- name: Install packages for Debian derivatives
+  apt: >
+    pkg={{ item }}
+    update_cache=yes
+    state=latest
+  with_items: mysql_client_packages
+  when: ansible_os_family == 'Debian'
+  tags:
+    - mysql
+    - percona
+
+- name: Ensure proper directories exist
+  file: >
+    path={{ mysql_config_dir }}/conf.d
+    state=directory
+    mode=0755 owner=root group=root
+  tags:
+    - mysql
+    - percona
+
+- name: Write configuration templates
+  template: >
+    src={{ item.src }}
+    dest={{ item.dest }}
+    mode=0644 owner=root group=root
+    backup=yes
+  with_items:
+      - { src: 'my-cnf.{{ ansible_os_family }}.j2', dest: '{{ mysql_config_dir }}/my.cnf' }
+      - { src: 'client-cnf.j2', dest: '{{ mysql_config_dir }}/conf.d/client.cnf' }
+  tags:
+    - mysql
+    - percona

@@ -1,0 +1,7 @@
+---
+# Defines variables for Debian/Ubuntu Percona client programs
+
+mysql_service: 'mysql'
+mysql_config_dir: '/etc/mysql'
+mysql_client_packages:
+  - 'percona-server-client-5.5'

@@ -1,0 +1,61 @@
+# {{ ansible_managed }}
+#
+# The MySQL database server configuration file.
+#
+# One can use all long options that the program supports.
+# Run program with --help to get a list of available options and with
+# --print-defaults to see which it would actually understand and use.
+#
+# Remember to edit /etc/mysql/debian.cnf when changing the socket location.
+#
+
+[client]
+{% for key,value in mysql_client.iteritems() %}
+{% if value|lower != 'none' %}
+{{ key }} = {{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}
+
+[mysqld_safe]
+{% for key,value in mysql_mysqld_safe.iteritems() %}
+{% if value|lower != 'none' %}
+{{ key }} = {{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}
+
+[mysqld]
+{% for key,value in mysql_mysqld.iteritems() %}
+{% if value|lower != 'none' %}
+{{ key }} = {{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}
+
+[mysqldump]
+{% for key,value in mysql_mysqldump.iteritems() %}
+{% if value|lower != 'none' %}
+{{ key }} = {{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}
+
+[isamchk]
+{% for key,value in mysql_isamchk.iteritems() %}
+{% if value|lower != 'none' %}
+{{ key }} = {{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}
+
+#
+# * IMPORTANT: Additional settings that can override those from this file!
+#   The files must end with '.cnf', otherwise they'll be ignored.
+#
+!includedir {{ mysql_config_dir }}/conf.d/
